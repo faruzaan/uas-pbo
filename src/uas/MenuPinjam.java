@@ -16,11 +16,28 @@ import static uas.Dashboard.nim;
 public class MenuPinjam extends javax.swing.JInternalFrame {
 
     public static int row;
+    public static String id_peminjaman;
     /**
      * Creates new form MenuPinjam
      */
     public MenuPinjam(String NIM) {
         initComponents();
+        try {
+            String id_peminjaman = "";
+            
+            String query = "SELECT COUNT(id) FROM tb_peminjaman";
+            java.sql.Connection vcon = (Connection)koneksi.configDB();
+            java.sql.Statement statement = vcon.createStatement();
+            java.sql.ResultSet result = statement.executeQuery(query);
+            
+            while (result.next()) {                
+                id_peminjaman = result.getString(1);
+            }
+            int id = Integer.parseInt(id_peminjaman);
+            id++;
+            txt_peminjaman1.setText(Integer.toString(id));
+        } catch (Exception e) {
+        }
     }
 
     /**
@@ -43,6 +60,11 @@ public class MenuPinjam extends javax.swing.JInternalFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         tb_cart = new javax.swing.JTable();
         btn_kurang = new javax.swing.JButton();
+        txt_peminjaman = new javax.swing.JLabel();
+        txt_peminjaman1 = new javax.swing.JLabel();
+
+        setClosable(true);
+        setTitle("Menu Pinjam");
 
         tb_barang.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -63,6 +85,11 @@ public class MenuPinjam extends javax.swing.JInternalFrame {
         jScrollPane1.setViewportView(tb_barang);
 
         btn_pinjam.setText("Pinjam");
+        btn_pinjam.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_pinjamActionPerformed(evt);
+            }
+        });
 
         btn_cancel.setText("Cancel");
 
@@ -83,6 +110,11 @@ public class MenuPinjam extends javax.swing.JInternalFrame {
         });
 
         btn_hapus.setText("Hapus");
+        btn_hapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_hapusActionPerformed(evt);
+            }
+        });
 
         tb_cart.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -92,9 +124,23 @@ public class MenuPinjam extends javax.swing.JInternalFrame {
                 "Id", "Barang", "Jumlah Barang"
             }
         ));
+        tb_cart.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tb_cartMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tb_cart);
 
         btn_kurang.setText("Kurangi");
+        btn_kurang.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_kurangActionPerformed(evt);
+            }
+        });
+
+        txt_peminjaman.setText("Id Peminjaman : ");
+
+        txt_peminjaman1.setText("1");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -104,23 +150,28 @@ public class MenuPinjam extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btn_pinjam)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btn_cancel))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(18, 18, 18)
+                                .addComponent(cb_ukm, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(53, 53, 53)
+                                .addComponent(txt_peminjaman)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txt_peminjaman1))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btn_tambah, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btn_kurang)
                             .addComponent(btn_hapus, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btn_pinjam)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btn_cancel))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addComponent(cb_ukm, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(8, Short.MAX_VALUE))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -128,7 +179,9 @@ public class MenuPinjam extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cb_ukm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel1)
+                    .addComponent(txt_peminjaman)
+                    .addComponent(txt_peminjaman1))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(33, 33, 33)
@@ -155,8 +208,6 @@ public class MenuPinjam extends javax.swing.JInternalFrame {
     
     private void cb_ukmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_ukmActionPerformed
         // TODO add your handling code here:
-        btn_pinjam.setEnabled(false);
-        btn_cancel.setEnabled(false);
         btn_kurang.setEnabled(false);
         btn_tambah.setEnabled(false);
         btn_hapus.setEnabled(false);
@@ -185,6 +236,8 @@ public class MenuPinjam extends javax.swing.JInternalFrame {
     private void tb_barangMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tb_barangMouseClicked
         // TODO add your handling code here:
         btn_tambah.setEnabled(true);
+        btn_kurang.setEnabled(false);
+        btn_hapus.setEnabled(false);
         row = tb_barang.getSelectedRow();
     }//GEN-LAST:event_tb_barangMouseClicked
 
@@ -193,8 +246,85 @@ public class MenuPinjam extends javax.swing.JInternalFrame {
         DefaultTableModel model = (DefaultTableModel)tb_cart.getModel();
         String id_barang = tb_barang.getModel().getValueAt(row, 0).toString();
         String nama_barang = tb_barang.getModel().getValueAt(row, 1).toString();
-        model.addRow(new Object[]{id_barang,nama_barang,id_barang});
+        if (tb_cart.getRowCount() == 0) {
+            model.addRow(new Object[]{id_barang,nama_barang,"1"});
+        } else {
+            boolean newrow = true;
+            int idrow = 0;
+            for (int i = 0; i < tb_cart.getRowCount(); i++) {
+                if (id_barang == tb_cart.getModel().getValueAt(i, 0)) {
+                    newrow = false;
+                    idrow = i;
+                }
+            }
+            if (newrow) {
+                model.addRow(new Object[]{id_barang,nama_barang,"1"});
+            }else{
+                String jml_barang = tb_cart.getModel().getValueAt(idrow, 2).toString();
+                int jml = Integer.parseInt(jml_barang);
+                jml++;
+                tb_cart.getModel().setValueAt(Integer.toString(jml), idrow, 2);
+            }
+        }
     }//GEN-LAST:event_btn_tambahActionPerformed
+
+    private void tb_cartMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tb_cartMouseClicked
+        // TODO add your handling code here:
+        btn_kurang.setEnabled(true);
+        btn_hapus.setEnabled(true);
+        btn_tambah.setEnabled(false);
+        
+        row = tb_cart.getSelectedRow();
+        
+    }//GEN-LAST:event_tb_cartMouseClicked
+
+    private void btn_kurangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_kurangActionPerformed
+        // TODO add your handling code here:
+        String jml_barang = tb_cart.getModel().getValueAt(row, 2).toString();
+        int jml = Integer.parseInt(jml_barang);
+        jml--;
+        tb_cart.getModel().setValueAt(Integer.toString(jml), row, 2);
+    }//GEN-LAST:event_btn_kurangActionPerformed
+
+    private void btn_hapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_hapusActionPerformed
+        // TODO add your handling code here:
+        DefaultTableModel model = (DefaultTableModel)tb_cart.getModel();
+        model.removeRow( row );
+    }//GEN-LAST:event_btn_hapusActionPerformed
+
+    private void insert_detail(){
+        String id_barang = "";
+        String jml_barang = "";
+        for (int i = 1; i <= tb_cart.getModel().getRowCount(); i++) {
+            id_barang = tb_cart.getModel().getValueAt(i, 0).toString();
+            jml_barang = tb_cart.getModel().getValueAt(i, 2).toString();
+            try {
+                String query = "INSERT INTO tb_detail_peminjaman(id_peminjaman,id_barang,jml_barang) VALUES('"+txt_peminjaman1.getText()+"','"+id_barang+"','"+jml_barang+"')";
+                java.sql.Connection vcon = (Connection)koneksi.configDB();
+                java.sql.PreparedStatement preStatement = vcon.prepareStatement(query);
+                preStatement.execute();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Data Barang Gagal Ditambahkan");
+                JOptionPane.showMessageDialog(this, e.getMessage());
+            }
+        }
+    }
+    private void btn_pinjamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_pinjamActionPerformed
+        // TODO add your handling code here:
+        String ukm = cb_ukm.getSelectedItem().toString();
+        try {
+            String query = "INSERT INTO tb_peminjaman(id,id_peminjam,ukm,status) VALUES('"+txt_peminjaman1.getText()+"','"+nim+"','"+ukm+"','Pending')";
+            java.sql.Connection vcon = (Connection)koneksi.configDB();
+            java.sql.PreparedStatement preStatement = vcon.prepareStatement(query);
+            preStatement.execute();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Data Barang Gagal Ditambahkan");
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+        
+        insert_detail();
+        
+    }//GEN-LAST:event_btn_pinjamActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -209,5 +339,7 @@ public class MenuPinjam extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tb_barang;
     private javax.swing.JTable tb_cart;
+    private javax.swing.JLabel txt_peminjaman;
+    private javax.swing.JLabel txt_peminjaman1;
     // End of variables declaration//GEN-END:variables
 }

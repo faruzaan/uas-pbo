@@ -147,6 +147,7 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void btn_peminjamanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_peminjamanMouseClicked
         // TODO add your handling code here:
+        
         MenuPinjam Mnpinjam = new MenuPinjam(nim);
         layar.add(Mnpinjam);
         Mnpinjam.setVisible(true);
